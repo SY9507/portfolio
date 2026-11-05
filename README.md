@@ -19,6 +19,9 @@ CCTV에서 도로 재난을 감지하고, 관제 담당자가 사건 정보와 �
 
 **[OCTV 프로젝트 상세 보기 →](projects/OCTV.md)**
 
+- [OCTV 시연 바로 보기 (3분 30초)](https://www.youtube.com/watch?v=r6f_p1V_ne0&t=210s)
+- [OCTV 전체 발표 보기 (화면 녹화본)](https://www.youtube.com/watch?v=r6f_p1V_ne0)
+
 ---
 
 ## 이음(E-eum)
