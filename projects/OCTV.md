@@ -34,7 +34,6 @@ KDT 최종 팀 프로젝트 · 2인 · 2026.09.21 ~ 2026.11.03
 6. [데이터와 데이터베이스](#-데이터와-데이터베이스)
 7. [Tech Stack](#-tech-stack)
 8. [한계 및 개선 방향](#-한계-및-개선-방향)
-9. [문서 안내](#-문서-안내)
 
 ---
 
@@ -108,8 +107,6 @@ CCTV에서 쓰러진 나무를 탐지해 사건이 생성되면, 관제 담당�
 | 후속 분석이 끝났을 때 | 같은 사건에서 위험도·대응 우선순위와 판단 근거를 확인할 수 있습니다. |
 | 담당자가 오탐으로 처리했을 때 | 기본 목록에서 빠지고, 오탐 상태를 선택하면 이력을 다시 확인할 수 있습니다. |
 
-관련 코드 — [사건 Service](backend/app/incidents/service.py), [사건 Repository](backend/app/incidents/repository.py), [사건 API](backend/app/incidents/router.py).
-
 ### 비동기 분석 연동
 
 사건을 저장한 후, **‘탐지됨’ 또는 ‘확인됨’ 상태이면서 아직 위험도 점수가 없는 사건**을 분석 대상으로 봅니다. 같은 사건의 분석이 이미 대기 중이거나 실행 중이면 Redis 잠금으로 중복 등록을 막습니다.
@@ -117,8 +114,6 @@ CCTV에서 쓰러진 나무를 탐지해 사건이 생성되면, 관제 담당�
 등록된 작업은 별도 Celery Worker가 처리합니다. Worker는 사건 ID를 받아 팀원이 구현한 LangGraph 분석을 실행합니다. 이 분석은 사건의 위험도를 판단하고 대응 기관과 출동 경로를 추천합니다.
 
 저는 **사건 저장 후 분석 요청을 보내는 흐름과 중복 등록 방지, 일시적인 오류에 대한 재시도**를 구현했습니다. 재시도할 때는 잠금을 유지하고, 분석이 완료되거나 최종 실패하면 해제합니다.
-
-관련 코드 — [분석 요청](backend/app/analysis_requests.py), [Redis Lock](backend/app/analysis_lock.py), [Celery Worker](backend/app/workers.py).
 
 
 ---
@@ -197,8 +192,6 @@ flowchart TB
 - **통제 정보 검증** — GeoJSON 좌표·도형을 검사하고, 미확인 통제 정보를 정상적인 빈 통제 목록으로 바꾸지 않습니다.
 - **결과 저장** — 전체 분석 결과를 하나의 트랜잭션으로 저장해 관제 화면에서 조회합니다.
 
-근거 코드 — [배포 Compose](deploy/compose.prod.yaml), [Caddy](deploy/Caddyfile), [분석 그래프](ai/orchestration/pipeline.py), [노드 구현](ai/orchestration/nodes.py), [결과 저장](backend/app/incidents/analysis_storage.py).
-
 ---
 
 ## 🔧 Technical Decisions
@@ -260,8 +253,6 @@ CCTV 프레임 한 장의 탐지는 그림자, 흔들림, 일시적인 가림 �
 **효과**  
 관제 담당자는 반복 탐지를 한 사건에서 확인할 수 있습니다. 사건을 종결한 뒤 같은 장소에서 다시 위험이 감지되면 새 사건으로 기록할 수 있습니다.
 
-관련 코드 — [사건 저장 및 갱신](backend/app/incidents/repository.py)
-
 ### 6. 오탐 버튼을 눌러도 사건이 재생성되는 문제 → 탐지 중단 간격으로 재활성화
 
 **문제**  
@@ -274,8 +265,6 @@ CCTV 프레임 한 장의 탐지는 그림자, 흔들림, 일시적인 가림 �
 
 **효과**  
 관제 담당자가 같은 장면을 반복해서 오탐 처리하는 부담을 줄이고, 한동안 감지되지 않다가 다시 나타난 상황은 새 사건으로 확인할 수 있습니다.
-
-관련 코드 — [suppress_recent_false_positive](backend/app/incidents/repository.py).
 
 ### 7. AI가 처리하기 전에 영상이 쌓이는 문제 → 오래된 대기 영상 정리
 
@@ -292,8 +281,6 @@ CCTV 영상은 AI가 분석하는 속도보다 빠르게 들어올 수 있습니
 **결과와 한계**
 
 오래된 영상이 대기열에 계속 쌓이는 것을 막아, AI가 지나간 장면을 뒤늦게 분석하는 상황을 줄입니다. 대신 부하가 클 때 일부 영상은 건너뜁니다. 이 방식이 실제 분석 지연을 얼마나 줄이는지는 별도 측정이 필요합니다.
-
-관련 코드 — [AnalysisFrameQueue](https://github.com/SY9507/octv/blob/main/ai/detection/frame_queue.py).
 
 
 
@@ -381,8 +368,6 @@ erDiagram
 | 기관 전달 관계 기반 조회 | 현장 사용자가 본인 기관에 전달된 사건을 조회 |
 | 사건 행 잠금 후 완료 판단 | 여러 기관의 동시 완료 요청을 직렬화 |
 
-전체 SQL 정의는 [기능별 SQL](backend/app)과 [DB 스키마](database/schema.sql)에서 확인할 수 있습니다.
-
 
 ---
 
@@ -410,17 +395,6 @@ erDiagram
 | 부하가 높으면 오래된 프레임 생략 | CCTV 수별 대기 시간·추론 시간·탐지 누락을 함께 측정해 샘플링 조정 |
 | 이미지 학습 결과와 실제 CCTV 환경 간 차이 | 야간·우천·원거리 장면을 구분한 평가와 실제 오탐 기반 데이터 보강 |
 | 데이터·가중치를 Git 외부에서 관리 | 데이터 버전·학습 설정·모델 평가 결과를 연결한 실험 기록 정리 |
-
----
-
-## 📚 문서 안내
-
-- [폴더·파일 구조](docs/STRUCTURE.md)
-- [초기 개발 기반 변경 기록](docs/CHANGES.md)
-- [DB 세팅·변경 가이드](docs/DATABASE.md)
-- [초기 DB 검증 기록](docs/VALIDATION.md)
-- [최신 ERD](database/ERD.png)
-- [화면·영상 자산 출처](docs/ASSET_SOURCES.md)
 
 ---
 
