@@ -332,7 +332,7 @@ sequenceDiagram
 
 | 전달받은 사건 확인 | 위험도 확인과 현장 대응 |
 | --- | --- |
-| <img src="../assets/octv/mobile-incident.jpg" alt="도로 침수 사건과 수신 기관, CCTV 영상이 표시된 모바일 화면" width="300"> | <img src="../assets/octv/mobile-response.jpg" alt="위험도와 우선순위, 현장 대응 완료 버튼이 표시된 모바일 화면" width="300"> |
+| <img src="../assets/octv/mobile-incident-detail.jpg" alt="도로 침수 사건과 수신 기관, CCTV 영상이 표시된 모바일 화면" width="300"> | <img src="../assets/octv/mobile-field-actions.jpg" alt="위험도와 우선순위, 현장 대응 완료 버튼이 표시된 모바일 화면" width="300"> |
 | 현장 담당자가 전달받은 도로 침수 사건의 수신 기관과 CCTV 영상을 확인합니다. | 위험도와 우선순위를 확인한 뒤 출동 경로를 비교하거나 현장 대응을 완료 처리할 수 있습니다. |
 
 ## 🗄 데이터와 데이터베이스
